@@ -32,10 +32,10 @@ export default function Login() {
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Nom d’utilisateur</label>
           <input
             type="text"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Nom d’utilisateur"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -43,10 +43,10 @@ export default function Login() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 mb-2">Mot de passe</label>
           <input
             type="password"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

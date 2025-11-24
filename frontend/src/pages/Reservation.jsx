@@ -1,85 +1,72 @@
-import { useContext, useState } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import DateRangePicker from "../components/DateRangePicker";
 
 export default function Reservation() {
-  const { id } = useParams();
+  const { id } = useParams();               // ID de la voiture
   const navigate = useNavigate();
   const { authTokens } = useContext(AuthContext);
-  const [formData, setFormData] = useState({
-    start_date: "",
-    end_date: "",
+
+  // Dates sélectionnées dans le DatePicker
+  const [dates, setDates] = useState({
+    startDate: null,
+    endDate: null,
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleDates = (range) => {
+    setDates(range);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/reservations/",
-        {
-          car_id: parseInt(id),  // ✅ correspond au serializer
-          start_date: formData.start_date,
-          end_date: formData.end_date,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authTokens?.access}`,
-          },
-        }
-      );
+    if (!dates.startDate || !dates.endDate) {
+      alert("Veuillez sélectionner une période.");
+      return;
+    }
 
-      alert("✅ Réservation effectuée avec succès !");
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/reservations/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.access}`,
+        },
+        body: JSON.stringify({
+          car_id: parseInt(id),
+          start_date: dates.startDate.toISOString().split("T")[0],
+          end_date: dates.endDate.toISOString().split("T")[0],
+        }),
+      });
+
+      if (!response.ok) throw new Error("Erreur de réservation");
+
+      alert("✅ Réservation effectuée !");
       navigate("/my-reservations");
     } catch (error) {
-      console.error("Erreur de réservation :", error);
-      alert("❌ Erreur lors de la réservation. Vérifiez votre connexion ou vos dates.");
+      console.error("Erreur API :", error);
+      alert("❌ Impossible de faire la réservation. Vérifiez vos dates.");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
-      <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">
+    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 border border-gray-200">
+      <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">
         Réserver cette voiture
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium">Date de début</label>
-          <input
-            type="date"
-            name="start_date"
-            value={formData.start_date}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2"
-            required
-          />
-        </div>
+      {/* Date picker */}
+      <div className="mb-4">
+        <DateRangePicker onChange={handleDates} />
+      </div>
 
-        <div>
-          <label className="block font-medium">Date de fin</label>
-          <input
-            type="date"
-            name="end_date"
-            value={formData.end_date}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          Confirmer la réservation
-        </button>
-      </form>
+      <button
+        onClick={handleSubmit}
+        className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition mt-4"
+      >
+        Confirmer la réservation
+      </button>
     </div>
   );
 }
