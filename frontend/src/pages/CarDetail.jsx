@@ -141,7 +141,7 @@ export default function CarDetail() {
       ) : (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 p-4 rounded">
           <p className="mb-3 font-medium">
-            ⚠️ Vous devez vous connecter pour réserver un véhicule.
+            Vous devez vous connecter pour réserver un véhicule.
           </p>
 
           <a

@@ -1,0 +1,59 @@
+/* --- WRAPPER --- */
+.date-picker-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+  }
+  
+  /* --- TITLE --- */
+  .picker-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    color: #2563eb;
+  }
+  
+  /* --- CALENDAR CARD --- */
+  .calendar-card {
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+  }
+  
+  /* --- CUSTOMIZING THE CALENDAR --- */
+  .rdrCalendarWrapper {
+    border-radius: 12px !important;
+    overflow: hidden;
+  }
+  
+  .rdrMonthAndYearPickers select {
+    font-size: 15px !important;
+    padding: 5px !important;
+    border-radius: 6px !important;
+  }
+  
+  .rdrDayNumber span {
+    font-size: 15px !important;
+  }
+  
+  .rdrDayHovered {
+    background-color: #eff6ff !important;
+  }
+  
+  .rdrSelected,
+  .rdrStartEdge,
+  .rdrEndEdge {
+    background-color: #2563eb !important;
+  }
+  
+  .rdrInRange {
+    background-color: #bfdbfe !important;
+  }
+  
+  .rdrDefinedRangesWrapper {
+    display: none !important; /* Cache le panneau à gauche */
+  }
+  

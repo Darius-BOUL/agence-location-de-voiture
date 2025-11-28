@@ -9,6 +9,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";   // ✅ ajouté
+import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (
@@ -17,13 +19,14 @@ export default function App() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
+
             {/* 🌐 Routes publiques */}
             <Route path="/" element={<Home />} />
             <Route path="/cars/:id" element={<CarDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* 🔒 Routes protégées (accès réservé aux utilisateurs connectés) */}
+            {/* 🔒 Routes utilisateur connecté */}
             <Route
               path="/reservation/:id"
               element={
@@ -32,12 +35,23 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/my-reservations"
               element={
                 <ProtectedRoute>
                   <MyReservations />
                 </ProtectedRoute>
+              }
+            />
+
+            {/* 🛑 Route ADMIN protégée */}
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
               }
             />
 

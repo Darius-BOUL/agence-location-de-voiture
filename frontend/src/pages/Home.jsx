@@ -1,51 +1,67 @@
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 
-const Home = () => {
-  const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function Login() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");  // Django authentifie sur username ou email selon ton backend
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/cars/")
-      .then(response => {
-        setCars(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("Erreur lors du chargement des voitures :", error);
-        setLoading(false);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/login/", {
+        username,   // Important : Django SimpleJWT attend "username"
+        password,
       });
-  }, []);
 
-  if (loading) {
-    return <div className="text-center text-lg mt-10">Chargement des voitures...</div>;
-  }
+      const { access, refresh, is_staff } = response.data;
+
+      // 🔐 Sauvegarde token + rôle
+      localStorage.setItem("access", access);
+      localStorage.setItem("refresh", refresh);
+      localStorage.setItem("is_staff", is_staff);
+
+      // 🎯 Redirection selon rôle
+      if (is_staff === true) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      setError("Identifiants incorrects");
+    }
+  };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Nos voitures disponibles</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {cars.map(car => (
-          <div key={car.id} className="border rounded-2xl shadow p-4 hover:shadow-lg transition">
-            <img
-              src={car.image}
-              alt={car.name}
-              className="w-full h-48 object-cover rounded-xl"
-            />
-            <h2 className="text-xl font-semibold mt-3">{car.name}</h2>
-            <p className="text-gray-700">Prix / jour : {car.price_per_day} FCFA</p>
-            <Link
-              to={`/cars/${car.id}`}
-              className="mt-3 block bg-blue-600 text-white text-center px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Détails
-            </Link>
-          </div>
-        ))}
-      </div>
+    <div className="p-6 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Connexion</h1>
+
+      {error && <p className="text-red-600">{error}</p>}
+
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Nom d'utilisateur ou email"
+          className="border p-2 w-full mb-3"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Mot de passe"
+          className="border p-2 w-full mb-3"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button className="bg-blue-600 text-white w-full p-2 rounded">
+          Se connecter
+        </button>
+      </form>
     </div>
   );
-};
-
-export default Home;
+}
